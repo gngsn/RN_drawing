@@ -1,45 +1,72 @@
 import React from 'react';
-import {View, TextInput, StyleSheet, Button, KeyboardAvoidingView, Platform} from 'react-native';
+import {
+    View,
+    TextInput,
+    StyleSheet,
+    Button,
+    KeyboardAvoidingView,
+    Platform,
+    Animated,
+    Keyboard,
+    Alert,
+} from 'react-native';
 
 class ChatFooter extends React.Component {
 
     constructor(prop) {
         super(prop);
-
-        this.state = {
-            typing: '',
-            message: [],
-        }
+        this.keyboardHeight = new Animated.Value(0);
     }
 
-    sendMessage = () => {
-        const newMessage = this.state.typing;
-        this.setState({
-            typing: '',
-            message: this.state.message.concat([newMessage])
-        })
+    componentWillMount () {
+        this.keyboardWillShowSub = Keyboard.addListener('keyboardWillShow', this.keyboardWillShow);
+        this.keyboardWillHideSub = Keyboard.addListener('keyboardWillHide', this.keyboardWillHide);
+    }
+
+    componentWillUnmount() {
+        this.keyboardWillShowSub.remove();
+        this.keyboardWillHideSub.remove();
+    }
+
+    keyboardWillShow = (event) => {
+        Animated.parallel([
+            Animated.timing(this.keyboardHeight, {
+                duration: event.duration,
+                toValue: event.endCoordinates.height-48,
+            }),
+        ]).start();
     };
 
+    keyboardWillHide = (event) => {
+        Animated.parallel([
+            Animated.timing(this.keyboardHeight, {
+                duration: event.duration,
+                toValue: 0,
+            })
+        ]).start();
+    };
+
+
     render() {
+        const { input, sendMessage, changeText } = this.props;
         return (
             <View styles={styles.container}>
-                <KeyboardAvoidingView
-                    behavior={Platform.OS === "ios" ? "padding" : null}
-                    keyboardVerticalOffset={80}
-                    resetScrollToCoords={{ x: 0, y: 0 }}
-                    enabled>
+                <Animated.View style={{ paddingBottom: this.keyboardHeight }}>
+                    <View style={styles.margin}>
                     <TextInput
-                        value={this.state.typing}
+                        value={input}
                         style={styles.input}
-                        autoFocus={true}
+                        // autoFocus={true}
                         underlineColorAndroid="transparent"
                         placeholder="Type something nice"
-                        onChangeText={text => this.setState({typing: text})}/>
-
+                        onChangeText={(text)=>{changeText(text)}}/>
                     <Button style={styles.button}
                             title={'send'}
-                            onPress={this.sendMessage}/>
-                </KeyboardAvoidingView>
+                            onPress={()=>{
+                                sendMessage();
+                            }}/>
+                    </View>
+                </Animated.View>
             </View>
         );
     }
@@ -49,15 +76,19 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
     },
-    input: {
-        height: 40,
+    margin: {
         borderColor: '#e0dde2',
-        borderWidth: 3,
+        borderWidth: 1,
         borderRadius: 30,
-        margin: 10
+        margin: 10,
+        flexDirection: 'row',
+    },
+    input: {
+        margin: 8,
+        width: 270
     },
     button: {
-        height: 40,
+        justifyContent: 'flex-end',
     }
 });
 
