@@ -21,5 +21,18 @@
     "babel-preset-expo": "^5.0.0",
     "jest-expo": "^32.0.0"
   },
-  "private": true
+  "private": true,
+  "name": "wq",
+  "version": "1.0.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tomas4540/RN_drawing.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tomas4540/RN_drawing/issues"
+  },
+  "homepage": "https://github.com/tomas4540/RN_drawing#readme",
+  "description": ""
 }

@@ -56,7 +56,7 @@ class ChatFooter extends React.Component {
                     <TextInput
                         value={input}
                         style={styles.input}
-                        // autoFocus={true}
+                        autoFocus={true}
                         underlineColorAndroid="transparent"
                         placeholder="Type something nice"
                         onChangeText={(text)=>{changeText(text)}}/>

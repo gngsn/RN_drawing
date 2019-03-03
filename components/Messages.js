@@ -2,45 +2,74 @@ import React, {Component} from 'react';
 import {
     View,
     Text,
-    StyleSheet
+    StyleSheet,
+    ScrollView,
+    FlatList
 } from 'react-native';
 
+
 export default class Messages extends Component {
+    footerY;
+
+    constructor(props) {
+        super(props);
+    };
+
+    state = {
+        bubbleSize : '60%'
+    };
+
+    scrollToBottom = () => {
+        this.refs._scrollView.scrollTo(footerY);
+    };
+
+    changeContentSize = (contentWidth, contentHeight) => {
+        this.scrollView.scrollToEnd({animated: true});
+    };
+
     render() {
         const {messages} = this.props;
         const messageList = messages.map(
-            ({id,text}) => (
+            ({id, text}) => (
                 <View
                     key={id}
-                    style={styles.bubble}>
-                    <Text key={text.id} style={styles.text}>
+                    style={[styles.bubble]}>
+                    <Text key={text.id} style={[styles.text]}>
                         {text}
                     </Text>
                 </View>
             )
         );
+
+
         return (
-            <View>
+            <ScrollView
+                ref={ref => this.scrollView = ref}
+                onContentSizeChange={this.changeContentSize}
+                onPress={this.scrollToBottom}>
+                <View onLayout={(e) => {
+                    this.footerY = e.nativeEvent.layout.y;
+                }}/>
                 {messageList}
-            </View>
+            </ScrollView>
+
         );
     }
 }
 
 const styles = StyleSheet.create({
     container: {
-        flex :1,
-        justifyContent: 'flex-end'
+        flex: 1,
+
     },
     bubble: {
-        backgroundColor : '#ffffff',
+        backgroundColor: '#ffffff',
         borderRadius: 30,
         margin: 10,
-        padding:10,
-        // flexDirection: 'row',
-        width : 200,
+        padding: 13
     },
     text: {
+        justifyContent: 'flex-end',
         textAlign: 'center',
         fontSize: 17,
     }
